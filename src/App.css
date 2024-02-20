@@ -1,0 +1,83 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  pointer-events: none;
+  border: none !important; /* Ensure no border is applied */
+  padding: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important; /* In case the border-like effect is from a shadow */
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 2vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+.centered-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-top: 20vh;
+  width: 60%; /* Set the width to 60% of the viewport width */
+  margin-left: auto; /* Center the content horizontally */
+  margin-right: auto; /* Center the content horizontally */
+  box-sizing: border-box;
+  align-items: center; /* Center the items horizontally in the flex container */
+}
+
+.form-header {
+  font-size: 40px;
+  font-weight: bold;
+}
+
+.form-border {
+  border: 2px solid #ccc; /* Customize the border color and width as needed */
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.form-border div {
+  text-align: left; /* Ensure content is left-justified */
+}
+
+
+.login-controls {
+  display: flex;
+  align-items: center;
+}
+
+.login-input, .login-button {
+  margin: 0 8px; /* Adjust the spacing between input and button */
+  padding: 10px 20px; /* Adjust the size */
+  font-size: 16px; /* Adjust font size here if needed */
+}
+
+.login-input {
+  flex-grow: 1; /* Makes input field to expand */
+}
+
+.login-button {
+  cursor: pointer; /* Changes cursor to pointer on hover for better UX */
+}
+
+.response-box {
+  margin-top: 20px; /* Adds space between boxes */
+  width: 50%; /* Adjust container width as needed */
+}
+
+.response-box textarea {
+  width: 100%; /* Makes textarea wider */
+  box-sizing: border-box; /* Includes padding and border in the width calculation */
+}
