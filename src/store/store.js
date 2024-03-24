@@ -8,6 +8,8 @@ const useStore = create((set) => ({
   setAloktaResponse: (response) => set({ aloktaResponse: response }),
   requestPayload: '',
   setRequestPayload: (response) => set({ requestPayload: response }),
+  config: {},
+  setConfig: (config) => set({ config }),
 }));
 
 export default useStore;

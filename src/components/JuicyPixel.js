@@ -4,7 +4,10 @@ import useStore from '../store/store';   // Adjust the path as necessary
 
 function JuicyPixel() {
 
-    const setJuicySessionId = useStore((state) => state.setJuicySessionId);
+    const { setJuicySessionId, config } = useStore((state) => ({
+      setJuicySessionId: state.setJuicySessionId,
+      config: state.config
+    }));
 
     useEffect(() => {
 
@@ -12,7 +15,7 @@ function JuicyPixel() {
             nextButton: "myFormButton",
             stopPingButton: "your-ping-button-id",
             completeButton: "mySubmitButton",
-            apiKey: `${process.env.REACT_APP_JUICYSCORE_DATA_API_KEY}`,
+            apiKey: config.juicyScoreDataApiKey,
             onSessionReady: function(s) {
               console.log('Session from config event', s);
               setJuicySessionId(s); // Update the session ID in the store

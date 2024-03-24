@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const decisionRouter = require('./backend/src/decision');
+const configRouter = require('./backend/src/config');
+
 
 //load .env file
 require('dotenv').config();
@@ -13,6 +15,8 @@ app.use(express.json());
 const PORT = process.env.SERVER_PORT || 5500;
 
 app.use('/backend/decision', decisionRouter);
+
+app.use('/config', configRouter);
 
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'build')));
