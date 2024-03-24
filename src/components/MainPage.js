@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import JuicyPixel from './JuicyPixel';
 import useStore from '../store/store'; // Adjust the path as necessary
@@ -11,17 +11,67 @@ function MainPage() {
 
   const [showForm, setShowForm] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [requestPayload, setRequestPayload] = useState('');
+  const [aloktaResponse, setAloktaResponse] = useState(false);
   
+
+  // Moved useStore hook call to the top level
+  const juicySessionId = useStore((state) => state.juicySessionId);
+
+  const amountRef = useRef(null);
+  const termRef = useRef(null);
+  const purposeRef = useRef(null);
+
   const toggleForm = () => {
     setShowForm(!showForm);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    setFormSubmitted(true);
-  };
+    const amount = amountRef.current.value;
+    const term = termRef.current.value;
+    const purpose = purposeRef.current.value;
+  
+    const requestBody = {
+      customer_id: '123', // This should be dynamically set based on your application logic
+      customer_email: email,
+      customer_phone: phoneNumber,
+      juicyscore_session_id: juicySessionId,
+      requested_loan_amount: amount,
+      requested_loan_purpose: purpose,
+      requested_loan_term: term,
+      decision_model: 'SimpleModel' // This should be dynamically set based on your application logic
+    };
 
-  const juicySessionId = useStore((state) => state.juicySessionId);
+    setRequestPayload(JSON.stringify(requestBody, null, 2));
+    setAloktaResponse('Submitting, please wait...')
+    setFormSubmitted(true); // Move this line here to immediately show textboxes  
+
+    const apiUrl = process.env.REACT_APP_ALOKTA_API_URL ? process.env.REACT_APP_ALOKTA_API_URL:'http://localhost:3333/api/decision';
+  
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization:  process.env.REACT_APP_ALOKTA_DECISION_AUTH_KEY
+        },
+        body: JSON.stringify(requestBody)
+      });
+  
+      if (!response.ok) {
+        throw new Error('Alokta decision response was not ok, status code ' + response.status);
+      }
+  
+      const data = await response.json();
+      setAloktaResponse(JSON.stringify(data, null, 2));
+    } catch (error) {
+      console.error('Error submitting a request to Alokta:', error);
+      setAloktaResponse(error);
+    }
+  };
+  
+
 
   return (
     <>
@@ -36,11 +86,11 @@ function MainPage() {
                 <div className="font-semibold text-xl mb-4">Cash Loan Application</div>
                 <div className="mb-4 flex items-center" >
                   <label htmlFor="amount" className="block w-2/3 text-sm font-medium text-gray-700">How much $ you are looking for:</label>
-                  <input type="number" placeholder="$ amount" id="amount" className="w-1/3 mt-1 p-2 w-full border rounded" />
+                  <input ref={amountRef} type="number" placeholder="$ amount" id="amount" className="w-1/3 mt-1 p-2 w-full border rounded" />
                 </div>
                 <div className="flex mb-4 items-center">
                   <label htmlFor="term" className="block w-1/3 text-sm font-medium text-gray-700">Term length:</label>
-                  <select id="term" className="mt-1 p-2 w-2/3 border rounded">
+                  <select ref={termRef} id="term" className="mt-1 p-2 w-2/3 border rounded">
                     <option value="6">6 Months</option>
                     <option value="12">12 Months</option>
                     {/* Additional options */}
@@ -48,33 +98,30 @@ function MainPage() {
                 </div>
                 <div className="flex mb-4 items-center">
                   <label htmlFor="purpose" className="block w-1/3 text-sm font-medium text-gray-700">Purpose:</label>
-                  <input type="text" placeholder="Purpose of the loan" id="purpose" className="w-2/3 mt-1 p-2 w-full border rounded" />
+                  <input ref={purposeRef} type="text" placeholder="Purpose of the loan" id="purpose" className="w-2/3 mt-1 p-2 w-full border rounded" />
                 </div>
-                <button id="mySubmitButton" type="submit" className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700 transition duration-150 ease-in-out">Submit</button>
+                <button id="mySubmitButton" type="submit" onClick={handleSubmit} className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700 transition duration-150 ease-in-out">Submit</button>
               </form>
             )}
 
-            {formSubmitted && (
+            { showForm && (
               <>
-                <div className="flex flex-col items-center w-full p-2 border rounded text-sm text-slate-400">
-                  <div className="response-box">
-                    <textarea value={`Session ID: ${juicySessionId}`} placeholder="Request submitted to Alokta" rows="6" readOnly className=""></textarea>
-                  </div>
-                  <div className="response-box">
-                    <textarea placeholder="Alokta response: JuicyScore API Request" rows="6"></textarea>
-                  </div>
-                  <div className="response-box">
-                    <textarea placeholder="Alokta response: JuicyScore API Response" rows="6"></textarea>
-                  </div>
-                  <div className="response-box">
-                    <textarea placeholder="Alokta response: How Rules Worked" rows="6"></textarea>
-                  </div>
-                  <div className="response-box">
-                    <textarea placeholder="Alokta response: Outcome Decisions" rows="6"></textarea>
-                  </div>
+              <div className="flex flex-col items-center w-full p-2 border rounded text-sm text-slate-400">
+                <div className="response-box">
+                  <label className="flex text-slate-700 mb-1">JuicyScore Session ID</label>
+                  <textarea readOnly value={juicySessionId?juicySessionId:''} rows="2" className=""></textarea>
                 </div>
+                <div className="response-box">
+                  <label className="flex text-slate-700 mb-1">Request Payload</label>
+                  <textarea readOnly value={requestPayload?requestPayload:''} rows="12" className=""></textarea>
+                </div>
+                <div className="response-box">
+                  <label className="flex text-slate-700 mb-1">Alokta Response</label>
+                  <textarea readOnly value={aloktaResponse?aloktaResponse:''} rows="12"></textarea>
+                </div>
+              </div>
               </>
-        )}
+             )}
       </div>
       <JuicyPixel />
     </>
