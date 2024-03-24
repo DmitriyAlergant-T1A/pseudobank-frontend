@@ -1,8 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const decisionRouter = require('./backend/src/decision');
-const configRouter = require('./backend/src/config');
+const decisionRouter = require('./backend/src/get_alokta_decision');
+const configRouter = require('./backend/src/serve_config');
 
 
 //load .env file
