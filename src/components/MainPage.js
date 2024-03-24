@@ -48,27 +48,26 @@ function MainPage() {
     setFormSubmitted(true); // Move this line here to immediately show textboxes  
 
     try {
-      const response = await fetch(
-        '/backend/decision', {
+      const response = await fetch('/backend/decision', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(requestBody),
       });
-  
+    
       if (!response.ok) {
-        throw new Error('Alokta decision response was not ok, status code ' + response.status);
+        const errorText = await response.text(); // Extracting text from the response body
+        throw new Error(`Alokta decision response was not ok, status code ${response.status} details: ${errorText}`);
       }
-  
+    
       const data = await response.json();
       setAloktaResponse(JSON.stringify(data, null, 2));
     } catch (error) {
       console.error('Error submitting a request to Alokta:', error);
-      setAloktaResponse(error);
+      setAloktaResponse(error.toString()); // Ensure the error message is converted to string if it's an Error object
     }
-  };
-  
+  }
 
 
   return (

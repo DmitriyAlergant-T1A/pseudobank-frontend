@@ -27,6 +27,7 @@ function JuicyPixel() {
         script.type = 'text/javascript';
         script.async = true;
         script.src = "https://score.juicyscore.net/static/js.js";
+        //script.src = "https://score.jcsc.online/static/js.js";
         document.head.appendChild(script);
     
         return () => {

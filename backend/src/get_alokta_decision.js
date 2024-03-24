@@ -18,14 +18,21 @@ router.post('/', async (req, res) => {
     });
 
     if (!response.ok) {
-      throw new Error('Alokta decision response was not ok, status code ' + response.status);
+      // Improved error handling with response details
+      const errorDetails = await response.text(); // Assuming the error details are in text format
+      throw new Error(`Alokta decision response was not ok, status code ${response.status}, details: ${errorDetails}`);
     }
 
     const data = await response.json();
     res.json(data);
   } catch (error) {
     console.error('Error submitting a request to Alokta:', error);
-    res.status(500).json({ error: 'Error submitting a request to Alokta' });
+    // Improved error reporting to client with error details
+    res.status(500).json({
+      error: 'Pseudobank-backend: error submitting a request to Alokta',
+      message: error.message,
+      details: error.details || null // Include additional details if available
+    });
   }
 });
 
