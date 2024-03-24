@@ -6,6 +6,7 @@ const router = express.Router();
 router.post('/', async (req, res) => {
   try {
     console.log("Requesting Alokta decision from: " + process.env.ALOKTA_API_URL)
+    console.log("Auth Key: " + process.env.ALOKTA_DECISION_AUTH_KEY)
 
     const response = await fetch(process.env.ALOKTA_API_URL, {
       method: 'POST',
