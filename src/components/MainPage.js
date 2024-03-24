@@ -47,16 +47,14 @@ function MainPage() {
     setAloktaResponse('Submitting, please wait...')
     setFormSubmitted(true); // Move this line here to immediately show textboxes  
 
-    const apiUrl = process.env.REACT_APP_ALOKTA_API_URL ? process.env.REACT_APP_ALOKTA_API_URL:'http://localhost:3333/api/decision';
-  
     try {
-      const response = await fetch(apiUrl, {
+      const response = await fetch(
+        '/backend/decision', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization:  process.env.REACT_APP_ALOKTA_DECISION_AUTH_KEY
         },
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify(requestBody),
       });
   
       if (!response.ok) {
