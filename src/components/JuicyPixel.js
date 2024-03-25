@@ -10,36 +10,31 @@ function JuicyPixel() {
     }));
 
     useEffect(() => {
-
+      // Only proceed if config.juicyScoreDataApiKey is available
+      if (config.juicyScoreDataApiKey) {
         window.juicyLabConfig = {
-            nextButton: "myFormButton",
-            stopPingButton: "your-ping-button-id",
-            completeButton: "mySubmitButton",
-            apiKey: config.juicyScoreDataApiKey,
-            onSessionReady: function(s) {
-              console.log('Session from config event', s);
-              setJuicySessionId(s); // Update the session ID in the store
-            }
-          };
-
+          nextButton: "myFormButton",
+          stopPingButton: "your-ping-button-id",
+          completeButton: "mySubmitButton",
+          apiKey: config.juicyScoreDataApiKey,
+          onSessionReady: function(s) {
+            console.log('Session from config event', s);
+            setJuicySessionId(s); // Update the session ID in the store
+          }
+        };
+    
         // Dynamically load the tracking script
         const script = document.createElement('script');
         script.type = 'text/javascript';
         script.async = true;
         script.src = "https://score.juicyscore.net/static/js.js";
-        //script.src = "https://score.jcsc.online/static/js.js";
         document.head.appendChild(script);
     
         return () => {
-          // Cleanup the script when the component unmounts
           document.head.removeChild(script);
         };
-      }, []);
-    
-      return (
-        <>
-        </>
-      );
-}
+      }
+    }, [config.juicyScoreDataApiKey]);
+}    
 
 export default JuicyPixel;
