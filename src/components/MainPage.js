@@ -84,10 +84,10 @@ function MainPage() {
         body: JSON.stringify(requestBody),
       });
     
-      if (!response.ok) {
-        const errorText = await response.text(); // Extracting text from the response body
-        throw new Error(`Alokta decision response was not ok, status code ${response.status} details: ${errorText}`);
-      }
+      // if (!response.ok) {
+      //   const errorText = await response.text(); // Extracting text from the response body
+      //   throw new Error(`Alokta decision response was not ok, status code ${response.status} details: ${errorText}`);
+      // }
     
       const data = await response.json();
 

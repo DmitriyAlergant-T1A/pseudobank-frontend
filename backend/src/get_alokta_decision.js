@@ -25,7 +25,6 @@ async function getAccessToken() {
 }
 
 router.post('/', async (req, res) => {
-  try {
     // Get the access token
     const accessToken = await getAccessToken();
     console.log("Successfully authorized to Alokta, got an access token");
@@ -48,43 +47,47 @@ router.post('/', async (req, res) => {
     }
     console.log("Prepared Alokta decision request: " + JSON.stringify(aloktaRequest, null, 2));
 
-
-    const diagramId = process.env.ALOKTA_DECISION_DIAGRAM_ID
-    const diagramUrl = process.env.ALOKTA_API_URL_DECISION + "/" + diagramId
-    console.log("Requesting Alokta decision from: " + diagramUrl);
-    
-    const response = await fetch(diagramUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify(aloktaRequest)
-    });
-
-    if (!response.ok) {
-      const errorDetails = await response.text();
-      throw new Error(`Alokta decision response was not ok, status code ${response.status}, details: ${errorDetails}`);
-    }
-
-    const data = await response.json();
-
-    console.log("Alotka decision response: " + JSON.stringify(data, null, 2));
-
-    res.json(
-      {
-        "request_to_alokta": aloktaRequest,
-        "alokta_response": data,
+    try {
+      const diagramId = process.env.ALOKTA_DECISION_DIAGRAM_ID
+      const diagramUrl = process.env.ALOKTA_API_URL_DECISION + "/" + diagramId
+      console.log("Requesting Alokta decision from: " + diagramUrl);
+      
+      const response = await fetch(diagramUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(aloktaRequest)
       });
 
-  } catch (error) {
-    console.error('Error submitting a request to Alokta:', error);
-    res.status(500).json({
-      error: 'Pseudobank-backend: error submitting a request to Alokta',
-      message: error.message,
-      details: error.details || null
-    });
-  }
+      if (!response.ok) {
+        const errorDetails = await response.text();
+        throw new Error(`Alokta decision response was not ok, status code ${response.status}, details: ${errorDetails}`);
+      }
+
+      const data = await response.json();
+
+      console.log("Alotka decision response: " + JSON.stringify(data, null, 2));
+
+      res.json(
+        {
+          "request_to_alokta": aloktaRequest,
+          "alokta_response": data,
+        });
+
+    } catch (error) {
+      console.error('Error submitting a request to Alokta:', error);
+      res.status(500).json({
+        "request_to_alokta": aloktaRequest,
+        "alokta_response": 
+        {
+          error: 'Error submitting a request to Alokta',
+          message: error.message,
+          details: error.details || null
+        }
+      });
+    }
 });
 
 module.exports = router;
