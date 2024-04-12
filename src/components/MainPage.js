@@ -71,9 +71,9 @@ function MainPage() {
       requested_loan_term: term,
     };
 
-    setRequestPayload(JSON.stringify(requestBody, null, 2));
+    setRequestPayload('Submitting, please wait...');
     setAloktaResponse('Submitting, please wait...')
-    setFormSubmitted(true); // Move this line here to immediately show textboxes  
+    setFormSubmitted(true);
 
     try {
       const response = await fetch('/backend/decision', {
@@ -90,12 +90,18 @@ function MainPage() {
       }
     
       const data = await response.json();
-      setAloktaResponse(JSON.stringify(data, null, 2));
+
+      setRequestPayload(JSON.stringify(data.request_to_alokta, null, 2));
+      setAloktaResponse(JSON.stringify(data.alokta_response, null, 2));
+      
     } catch (error) {
       console.error('Error submitting a request to Alokta:', error);
-      setAloktaResponse(error.toString()); // Ensure the error message is converted to string if it's an Error object
+
+      setRequestPayload(error.toString());
+      setAloktaResponse(error.toString());
     }
   }
+  
 
 
   return (
@@ -138,7 +144,7 @@ function MainPage() {
                   <textarea readOnly value={juicySessionId?juicySessionId:''} rows="2" className=""></textarea>
                 </div>
                 <div className="response-box">
-                  <label className="flex text-slate-700 mb-1">Request Payload</label>
+                  <label className="flex text-slate-700 mb-1">Request to Alokta</label>
                   <textarea readOnly value={requestPayload?requestPayload:''} rows="12" className=""></textarea>
                 </div>
                 <div className="response-box">

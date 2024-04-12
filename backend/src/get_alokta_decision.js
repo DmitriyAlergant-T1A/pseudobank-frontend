@@ -71,7 +71,11 @@ router.post('/', async (req, res) => {
 
     console.log("Alotka decision response: " + JSON.stringify(data, null, 2));
 
-    res.json(data);
+    res.json(
+      {
+        "request_to_alokta": aloktaRequest,
+        "alokta_response": data,
+      });
 
   } catch (error) {
     console.error('Error submitting a request to Alokta:', error);
