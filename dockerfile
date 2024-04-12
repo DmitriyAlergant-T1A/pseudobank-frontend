@@ -31,6 +31,10 @@ RUN npm install --only=production
 # Copy the build directory from the builder stage
 COPY --from=builder /app/build ./build
 
+# Copy backend files
+COPY server.js ./
+COPY backend ./backend
+
 # Expose the port on which the app will run
 EXPOSE 5500
 
