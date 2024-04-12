@@ -55,4 +55,4 @@ jobs:
         acrName: ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}
         containerAppName: ${{ vars.AZ_CONTAINER_APP_NAME }}
         resourceGroup: ${{ vars.AZ_RESOURCE_GROUP }}
-        imageToDeploy: ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}.azurecr.io/pseudobank-frontend:latest
+        imageToDeploy: ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/pseudobank-frontend:latest
