@@ -26,8 +26,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/"     element={<LoginPage />} />
-        <Route path="/main" element={<MainPage />} />
+        <Route path="/"    element={<MainPage />} />
       </Routes>
     </Router>
   );

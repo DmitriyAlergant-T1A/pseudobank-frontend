@@ -1,22 +1,43 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import JuicyPixel from './JuicyPixel';
 import useStore from '../store/store'; // Adjust the path as necessary
 import Logo from './Logo';
 
+import Auth0Lock from 'auth0-lock';
+
 function MainPage() {
   const { state } = useLocation();
-  const email = state?.email; 
-  const phoneNumber = '123-456-7890';
 
   const [showForm, setShowForm] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [requestPayload, setRequestPayload] = useState('');
   const [aloktaResponse, setAloktaResponse] = useState(false);
-  
 
-  // Moved useStore hook call to the top level
+  const [userProfile, setUserProfile] = useState({}); // State to store user profile data
+
+  const [geolocation, setGeolocation] = useState({}); // State to store geolocation data
+
   const juicySessionId = useStore((state) => state.juicySessionId);
+
+  useEffect(() => {
+    // Fetch user profile data from /profile endpoint
+    const fetchUserProfile = async () => {
+      try {
+        const response = await fetch('/profile');
+        if (!response.ok) {
+          throw new Error('Failed to fetch user profile');
+        }
+        const profileData = await response.json();
+        console.debug('User profile data:', profileData);
+        setUserProfile(profileData); 
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      }
+      
+    };
+    fetchUserProfile();
+  }, []); 
 
   const amountRef = useRef(null);
   const termRef = useRef(null);
@@ -33,14 +54,21 @@ function MainPage() {
     const purpose = purposeRef.current.value;
   
     const requestBody = {
-      customer_id: '123', // This should be dynamically set based on your application logic
-      customer_email: email,
-      customer_phone: phoneNumber,
+      customer_id: userProfile?.app_metadata?.customer_id,
+      customer_email: userProfile?.email,
+      customer_phone: userProfile?.user_metadata?.phone_number,
+      browser_time_local: new Date().toLocaleString(), // Local time in the default locale
+      browser_timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, // User's timezone
+      broswer_useragent: navigator.userAgent, // Browser version and details
+      browser_platform: navigator.platform, // Type of device (e.g., MacIntel, Win32)
+      browser_language: navigator.language, // Browser language (e.g., en-US)
+      browser_location: geolocation,
+      browser_connection_type: navigator.connection.type,
+      browser_resolution: window.screen.width + 'x' + window.screen.height,
       juicyscore_session_id: juicySessionId,
       requested_loan_amount: amount,
       requested_loan_purpose: purpose,
       requested_loan_term: term,
-      decision_model: 'SimpleModel' // This should be dynamically set based on your application logic
     };
 
     setRequestPayload(JSON.stringify(requestBody, null, 2));
@@ -72,9 +100,10 @@ function MainPage() {
 
   return (
     <>
-      <Logo />
+      <Logo userProfile={userProfile}/>
+
+
       <div className="w-full flex flex-col items-center justify-start min-h-screen bg-gray-100 p-4 mx-auto">
-            <p className="mt-4 text-lg">Hello, <b>{email}</b> (<b>{phoneNumber}</b>)</p>
             {!showForm && (
               <button id="myFormButton" onClick={toggleForm} className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition duration-150 ease-in-out">I want to borrow cash</button>
             )}
