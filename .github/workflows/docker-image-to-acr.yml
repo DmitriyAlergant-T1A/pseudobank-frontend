@@ -39,3 +39,20 @@ jobs:
       run: |
         docker push         ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/pseudobank-frontend:latest
   
+  Update-Container-App:
+    needs: Build-and-Push
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_REGISTRY_SP_CREDS }}
+
+    - name: Deploy to Azure Container App
+      uses: azure/container-apps-deploy-action@v0
+      with:
+        acrName: ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}
+        containerAppName: ${{ vars.AZ_CONTAINER_APP_NAME }}
+        resourceGroup: ${{ vars.AZ_RESOURCE_GROUP }}
+        imageToDeploy: ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}.azurecr.io/pseudobank-frontend:latest
