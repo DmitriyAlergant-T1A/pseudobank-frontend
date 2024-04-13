@@ -34,6 +34,7 @@ router.post('/', async (req, res) => {
       "customer_email": req.body.customer_email,
       "customer_phone": "123456",
       "customer_id": stringToDecimal(req.body.customer_email).toString(),
+      "juicyscore_session_id":  req.body.juicyscore_session_id,
       "application_id":Math.floor(1000000000 + Math.random() * 9000000000).toString(),
       "browser_useragent":req.userAgent,
       "browser_ip":req.ip,
