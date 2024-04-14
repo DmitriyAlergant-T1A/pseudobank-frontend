@@ -18,7 +18,29 @@ function MainPage() {
 
   const [geolocation, setGeolocation] = useState({}); // State to store geolocation data
 
+  const [isSubmitEnabled, setIsSubmitEnabled] = useState(false);
+
   const juicySessionId = useStore((state) => state.juicySessionId);
+
+  const [amount, setAmount] = useState('');
+  const [term, setTerm] = useState('');
+  const [purpose, setPurpose] = useState('');
+
+  const handleAmountChange = (e) => {
+    setAmount(e.target.value);
+  };
+
+  const handleTermChange = (e) => {
+    setTerm(e.target.value);
+  };
+
+  const handlePurposeChange = (e) => {
+    setPurpose(e.target.value);
+  };
+
+  const amountRef = useRef(null);
+  const termRef = useRef(null);
+  const purposeRef = useRef(null);
 
   useEffect(() => {
     // Fetch user profile data from /profile endpoint
@@ -39,19 +61,20 @@ function MainPage() {
     fetchUserProfile();
   }, []); 
 
-  const amountRef = useRef(null);
-  const termRef = useRef(null);
-  const purposeRef = useRef(null);
+  useEffect(() => {
+    const _enableSubmit = (amount > 0) && (purpose.length > 0);
 
+    console.log('Enable submit:', _enableSubmit);
+
+    setIsSubmitEnabled(_enableSubmit);
+  }, [amount, term, purpose]);
+  
   const toggleForm = () => {
     setShowForm(!showForm);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const amount = amountRef.current.value;
-    const term = termRef.current.value;
-    const purpose = purposeRef.current.value;
   
     const requestBody = {
       customer_id: userProfile?.app_metadata?.customer_id,
@@ -118,11 +141,11 @@ function MainPage() {
                 <div className="font-semibold text-xl mb-4">Cash Loan Application</div>
                 <div className="mb-4 flex items-center" >
                   <label htmlFor="amount" className="block w-2/3 text-sm font-medium text-gray-700">How much $ you are looking for:</label>
-                  <input ref={amountRef} type="number" placeholder="$ amount" id="amount" className="w-1/3 mt-1 p-2 w-full border rounded" />
+                  <input value={amount} onChange={handleAmountChange} type="number" placeholder="$ amount" id="amount" className="w-1/3 mt-1 p-2 w-full border rounded" />
                 </div>
                 <div className="flex mb-4 items-center">
                   <label htmlFor="term" className="block w-1/3 text-sm font-medium text-gray-700">Term length:</label>
-                  <select ref={termRef} id="term" className="mt-1 p-2 w-2/3 border rounded">
+                  <select  value={term} onChange={handleTermChange} id="term" className="mt-1 p-2 w-2/3 border rounded">
                     <option value="6">6 Months</option>
                     <option value="12">12 Months</option>
                     {/* Additional options */}
@@ -130,9 +153,13 @@ function MainPage() {
                 </div>
                 <div className="flex mb-4 items-center">
                   <label htmlFor="purpose" className="block w-1/3 text-sm font-medium text-gray-700">Purpose:</label>
-                  <input ref={purposeRef} type="text" placeholder="Purpose of the loan" id="purpose" className="w-2/3 mt-1 p-2 w-full border rounded" />
+                  <input value={purpose} onChange={handlePurposeChange} type="text" placeholder="Purpose of the loan" id="purpose" className="w-2/3 mt-1 p-2 w-full border rounded" />
                 </div>
-                <button id="mySubmitButton" type="submit" onClick={handleSubmit} className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700 transition duration-150 ease-in-out">Submit</button>
+                <button id="mySubmitButton" type="submit" onClick={handleSubmit} 
+                  disabled={!isSubmitEnabled} 
+                  className={
+                      `${isSubmitEnabled ? 'bg-green-500 hover:bg-green-700' : 'bg-gray-300'} 
+                        px-4 py-2 text-white rounded transition duration-150 ease-in-out`}>Submit</button>
               </form>
             )}
 
