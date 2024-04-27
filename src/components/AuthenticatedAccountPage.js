@@ -6,7 +6,7 @@ import Logo from './Logo';
 
 import Auth0Lock from 'auth0-lock';
 
-function MainPage() {
+function AuthenticatedAccountPage() {
   const { state } = useLocation();
 
   const [showForm, setShowForm] = useState(false);
@@ -41,6 +41,19 @@ function MainPage() {
   const amountRef = useRef(null);
   const termRef = useRef(null);
   const purposeRef = useRef(null);
+
+  const setConfig = useStore((state) => state.setConfig);
+
+  useEffect(() => {
+
+    console.log("Fetching /config")
+
+    fetch('/config')
+      .then((response) => response.json())
+      .then((configData) => {
+        setConfig(configData);
+      });
+  }, [setConfig]);
 
   useEffect(() => {
     // Fetch user profile data from /profile endpoint
@@ -95,11 +108,11 @@ function MainPage() {
     };
 
     setRequestPayload('Submitting, please wait...');
-    setAloktaResponse('Submitting, please wait...')
+    setAloktaResponse('Submitting, please wait...');
     setFormSubmitted(true);
 
     try {
-      const response = await fetch('/backend/decision', {
+      const response = await fetch('/backend/decision/cashloan', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -187,4 +200,4 @@ function MainPage() {
   );
 }
 
-export default MainPage;
+export default AuthenticatedAccountPage;

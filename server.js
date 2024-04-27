@@ -19,6 +19,23 @@ const authConfig = {
   issuerBaseURL: process.env.OIDC_ISSUERBASEURL
 };
 
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, 'build')));
+
+// Handle React routing, return all requests to React app
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+})
+
+app.use('/config', configRouter);
+
+app.use('/backend/decision', decisionRouter);
+
+
 // Middleware to conditionally apply authentication
 const conditionalAuth = (req, res, next) => {
   if (process.env.AUTH_AUTH0 === 'Y') {
@@ -28,28 +45,12 @@ const conditionalAuth = (req, res, next) => {
   }
 };
 
-const app = express();
-app.use(cors());
-app.use(express.json());
-
 // auth router attaches /login, /logout, and /callback routes to the baseURL
 if (process.env.AUTH_AUTH0 === 'Y') {
   app.use(auth(authConfig));
 }
 
 const PORT = process.env.SERVER_PORT || 5500;
-
-// Serve static files from the React app
-app.use(express.static(path.join(__dirname, 'build')));
-
-// Handle React routing, return all requests to React app
-app.get('/', conditionalAuth, (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
-});
-
-app.use('/backend/decision', conditionalAuth, decisionRouter);
-
-app.use('/config', conditionalAuth, configRouter);
 
 app.get('/profile', requiresAuth(), (req, res) => {
   res.send(JSON.stringify(req.oidc.user));

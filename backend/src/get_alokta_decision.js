@@ -24,32 +24,78 @@ async function getAccessToken() {
   return data.access_token;
 }
 
-router.post('/', async (req, res) => {
-    // Get the access token
-    const accessToken = await getAccessToken();
-    console.log("Successfully authorized to Alokta, got an access token");
-
+router.post('/cashloan', async (req, res) => {
 
     const aloktaRequest = {
-      "customer_email": req.body.customer_email,
-      "customer_phone": "123456",
-      "customer_id": stringToDecimal(req.body.customer_email).toString(),
       "juicyscore_session_id":  req.body.juicyscore_session_id,
       "application_id":Math.floor(1000000000 + Math.random() * 9000000000).toString(),
+
+      "channel": "site",
+
       "browser_useragent":req.userAgent,
       "browser_ip":req.ip,
-      // "browser_platform": req.body.browser_platform,
-      // "browser_language": req.body.browser_language,
-      // "browser_resolution": req.body.browser_resolution,
-      // "browser_location": req.body.browser_location,  
+      "browser_platform": req.body.browser_platform,
+      "browser_language": req.body.browser_language,
+      "browser_connection_type": req.body.browser_connection_type,
+      "browser_timezone": req.body.browser_timezone,
+      "browser_time_local": req.body.browser_time_local,
+
       "requested_loan_amount": req.body.requested_loan_amount,
       "requested_loan_purpose": req.body.requested_loan_purpose,
       "requested_loan_term": req.body.requested_loan_term,
+
+      "customer_email": req.body.customer_email,
+      "customer_phone": "123456",
+      "customer_id": stringToDecimal(req.body.customer_email).toString(),
     }
-    console.log("Prepared Alokta decision request: " + JSON.stringify(aloktaRequest, null, 2));
+    console.log("Prepared Alokta decision request for Cash Loan: " + JSON.stringify(aloktaRequest, null, 2));
+
+    getAloktaDecision(aloktaRequest, process.env.ALOKTA_DECISION_DIAGRAM_ID_CASHLOAN, res);
+});
+
+
+router.post('/paydayloan', async (req, res) => {
+
+  const aloktaRequest = {
+    "juicyscore_session_id":  req.body.juicyscore_session_id,
+    "application_id":Math.floor(1000000000 + Math.random() * 9000000000).toString(),
+
+    "channel": "site",
+
+    "browser_useragent":req.userAgent,
+    'browser_platform': req.body.browser_platform,
+    "browser_ip":req.ip,
+    "browser_timezone": req.body.browser_timezone,
+    "browser_time_local": req.body.browser_time_local,
+    "browser_language": req.body.browser_language,
+    "browser_connection_type": req.body.browser_connection_type,
+    
+    "requested_loan_amount": req.body.requested_loan_amount,
+    "requested_loan_purpose": req.body.requested_loan_purpose,
+    "requested_loan_term": req.body.requested_loan_term,
+
+    "customer_full_name": req.body.customer_full_name,
+    "customer_social_insurance_number": req.body.customer_social_insurance_number,
+    "customer_id": stringToDecimal(req.body.customer_email).toString(),
+    "customer_email": req.body.customer_email,
+    "customer_phone": req.body.customer_phone,
+    "customer_reported_income": req.body.customer_reported_income,
+    "customer_employment_occupation": req.body.customer_employment_occupation,
+    "customer_employment_employer": req.body.customer_employment_employer,
+    "customer_length_of_employment_months": req.body.customer_length_of_employment_months
+  }
+  console.log("Prepared Alokta decision request for Payday Loan: " + JSON.stringify(aloktaRequest, null, 2));
+
+  getAloktaDecision(aloktaRequest, process.env.ALOKTA_DECISION_DIAGRAM_ID_PAYDAY, res);
+});
+
+
+  async function getAloktaDecision(aloktaRequest, diagramId, res) {
+
+    const accessToken = await getAccessToken();
+    console.log("Successfully authorized to Alokta, got an access token");
 
     try {
-      const diagramId = process.env.ALOKTA_DECISION_DIAGRAM_ID
       const diagramUrl = process.env.ALOKTA_API_URL_DECISION + "/" + diagramId
       console.log("Requesting Alokta decision from: " + diagramUrl);
       
@@ -89,6 +135,6 @@ router.post('/', async (req, res) => {
         }
       });
     }
-});
+};
 
 module.exports = router;
