@@ -32,7 +32,7 @@ router.post('/cashloan', async (req, res) => {
 
       "channel": "site",
 
-      "browser_useragent":req.userAgent,
+      "browser_useragent":req.body.broswer_useragent,
       "browser_ip":req.ip,
       "browser_platform": req.body.browser_platform,
       "browser_language": req.body.browser_language,
@@ -62,7 +62,7 @@ router.post('/paydayloan', async (req, res) => {
 
     "channel": "site",
 
-    "browser_useragent":req.userAgent,
+    "browser_useragent":req.body.broswer_useragent,
     'browser_platform': req.body.browser_platform,
     "browser_ip":req.ip,
     "browser_timezone": req.body.browser_timezone,
