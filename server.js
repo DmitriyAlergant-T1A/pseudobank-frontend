@@ -1,21 +1,18 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-
 const decisionRouter = require('./backend/src/get_alokta_decision');
 const configRouter = require('./backend/src/serve_config');
-
 const { auth, requiresAuth } = require('express-openid-connect');
 
-//load .env file
+// Load .env file
 require('dotenv').config();
 
 const authConfig = {
-  authRequired: true,
-  //auth0Logout: true,
+  authRequired: false, // Important: Set to false to not require auth for all routes
   secret: process.env.AUTH_SECRET,
   baseURL: process.env.OIDC_BASEURL,
-  clientID: process.env.OIDC_CLIENTID,  
+  clientID: process.env.OIDC_CLIENTID,
   issuerBaseURL: process.env.OIDC_ISSUERBASEURL
 };
 
@@ -26,35 +23,30 @@ app.use(express.json());
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'build')));
 
-// Handle React routing, return all requests to React app
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
-})
-
-app.use('/config', configRouter);
-
-app.use('/backend/decision', decisionRouter);
-
-
-// Middleware to conditionally apply authentication
-const conditionalAuth = (req, res, next) => {
-  if (process.env.AUTH_AUTH0 === 'Y') {
-    requiresAuth()(req, res, next);
-  } else {
-    next();
-  }
-};
-
-// auth router attaches /login, /logout, and /callback routes to the baseURL
+// Initialize Auth0 if needed
 if (process.env.AUTH_AUTH0 === 'Y') {
   app.use(auth(authConfig));
 }
 
-const PORT = process.env.SERVER_PORT || 5500;
+// Public API Routes
+app.use('/config', configRouter);
 
+// Protected API Routes
+app.use('/backend/decision', requiresAuth(), decisionRouter);
+
+// Profile route as an example of a protected route
 app.get('/profile', requiresAuth(), (req, res) => {
   res.send(JSON.stringify(req.oidc.user));
 });
+
+// Handle React routing, return all requests to React app
+// This catch-all route should be defined after all other API and Auth routes
+app.get('*', (req, res) => {
+  // Serve index.html for any unknown paths
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
+
+const PORT = process.env.SERVER_PORT || 5500;
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
