@@ -1,13 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import JuicyPixel from './JuicyPixel';
 import useStore from '../store/store'; // Adjust the path as necessary
 import Logo from './Logo';
 
-import Auth0Lock from 'auth0-lock';
+import TextInputEntry from './FormElements/TextInputEntry';
 
 function PaydayLoanApplication() {
-  const { state } = useLocation();
 
   const [isSubmitEnabled, setIsSubmitEnabled] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
@@ -23,21 +22,16 @@ function PaydayLoanApplication() {
     reportedIncome: '',
     employmentOccupation: '',
     employmentEmployer: '',
-    lengthOfEmploymentMonths: ''
-    // Add new form fields here as needed
+    lengthOfEmploymentMonths: 36
   });
 
-  const handleItemChange = (e) => {
-
-    const { id, value } = e.target;
-
-    setFormData(prevState => ({
-      ...prevState,
-      [id]: value,
+  const handleItemChange = useCallback((event) => {
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      [event.target.id]: event.target.value
     }));
+  }, []); 
 
-    //console.log('Form data:', formData);
-  };
 
   const setConfig = useStore((state) => state.setConfig);
   const juicySessionId = useStore((state) => state.juicySessionId);
@@ -67,13 +61,12 @@ function PaydayLoanApplication() {
 
     //console.log('Enable submit:', _enableSubmit);
 
-    //setIsSubmitEnabled(_enableSubmit);
+    setIsSubmitEnabled(_enableSubmit);
 
-    setIsSubmitEnabled(true);
+    //setIsSubmitEnabled(true);
     
   }, [formData]);
-
-  
+ 
   const handleSubmit = async (event) => {
     event.preventDefault();
   
@@ -127,6 +120,7 @@ function PaydayLoanApplication() {
     }
   }
 
+  
   return (
     <>
       <Logo />
@@ -136,42 +130,54 @@ function PaydayLoanApplication() {
               <form className="mt-4 p-6 bg-white rounded shadow-md w-full max-w-md" onSubmit={handleSubmit}>
                 <div className="font-semibold text-xl mb-4">Payday Loan Application</div>
 
-                {/* Full Name */}
-                <div className="mb-4 flex items-center" >
-                  <label className="block w-2/3 text-sm font-medium text-gray-700">Full Legal Name</label>
-                  <input value={formData.fullName}  onChange={handleItemChange} type="text" placeholder="Gaius Julius Caesar" id="fullName" className="w-1/3 mt-1 p-2 w-full border rounded" />
-                </div>
+                <TextInputEntry
+                  labeltext="Full Legal Name"
+                  isMandatory={true}
+                  placeholder="Gaius Julius Caesar"
+                  id="fullName"
+                  onChangeHandler={handleItemChange}
+                />
 
+                <TextInputEntry
+                  labeltext="National ID#"
+                  isMandatory={true}
+                  placeholder="GJUI1204"
+                  id="socialNumber"
+                  onChangeHandler={handleItemChange}
+                />
 
-                {/* Social */}
-                <div className="mb-4 flex items-center" >
-                  <label className="block w-2/3 text-sm font-medium text-gray-700">Your Social Insurance Number</label>
-                  <input value={formData.socialNumber}  onChange={handleItemChange} type="text" placeholder="123..."  id="socialNumber" className="w-1/3 mt-1 p-2 w-full border rounded" 
-                  onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}   />
-                </div>
+                <TextInputEntry
+                  labeltext="Email Address"
+                  isMandatory={true}
+                  placeholder="caesar@romanempire.it"
+                  id="email"
+                  onChangeHandler={handleItemChange}
+                />
 
-                {/* Email */}
-                <div className="mb-4 flex items-center" >
-                  <label className="block w-2/3 text-sm font-medium text-gray-700">Your Email</label>
-                  <input value={formData.email}  onChange={handleItemChange} type="text" placeholder="caesar@romanempire.it" id="email" className="w-1/3 mt-1 p-2 w-full border rounded" />
-                </div>
-
-                {/* Phone Number */}
-                <div className="mb-4 flex items-center" >
-                  <label className="block w-2/3 text-sm font-medium text-gray-700">Your Phone Number</label>
-                  <input value={formData.phone}  onChange={handleItemChange} type="text" placeholder="123456789" id="phone" className="w-1/3 mt-1 p-2 w-full border rounded"
-                  onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}  />
-                </div>
+                <TextInputEntry 
+                  labeltext="Your Phone Number"
+                  isMandatory={true}
+                  placeholder="123456789"
+                  id="phone"
+                  onChangeHandler={handleItemChange}
+                  onInputHandler={(e) => e.target.value = e.target.value.replace(/\D/g, '')} 
+                />
 
                 {/* Amount */}
                 <div className="mb-4 flex items-center" >
-                  <label className="block w-2/3 text-sm font-medium text-gray-700">How much $ you are looking for:</label>
+                  <div className={`block w-2/3`}>
+                      <label className="text-sm font-medium text-red-700 mr-1">*</label>
+                      <label className="text-sm font-medium text-gray-700">How much $ you are looking for:</label>
+                  </div>
                   <input value={formData.amount} onChange={handleItemChange} type="number" placeholder="$ loan amount" id="amount" className="w-1/3 mt-1 p-2 w-full border rounded" />
                 </div>
 
                 {/* Term */}
                 <div className="flex mb-4 items-center">
-                  <label className="block w-1/3 text-sm font-medium text-gray-700">Term length:</label>
+                  <div className={`block w-2/3`}>
+                      <label className="text-sm font-medium text-red-700 mr-1">*</label>
+                      <label className="text-sm font-medium text-gray-700">Term Length</label>
+                  </div>                
                   <select  value={formData.termDays} onChange={handleItemChange} id="termDays" className="mt-1 p-2 w-2/3 border rounded">
                     <option value="7">7 Days</option>
                     <option value="14">14 Days</option>
@@ -181,34 +187,53 @@ function PaydayLoanApplication() {
                   </select>
                 </div>
 
-                {/* Purpose */}
-                <div className="flex mb-4 items-center">
-                  <label className="block w-1/3 text-sm font-medium text-gray-700">Purpose:</label>
-                  <input value={formData.purpose} onChange={handleItemChange} type="text" placeholder="Purpose of the loan" id="purpose" className="w-2/3 mt-1 p-2 w-full border rounded" />
-                </div>
-
+                <TextInputEntry
+                  labeltext="Purpose of the Loan"
+                  isMandatory={true}
+                  placeholder="Purpose of the loan"
+                  id="purpose"
+                  onChangeHandler={handleItemChange}
+                />
+                
                 {/* Income */}
                 <div className="mb-4 flex items-center" >
-                  <label className="block w-2/3 text-sm font-medium text-gray-700">Your average monthly income:</label>
+                  <div className={`block w-2/3`}>
+                    <label className="text-sm font-medium text-red-700 mr-1">*</label>
+                    <label className="text-sm font-medium text-gray-700">Your average monthly income:</label>
+                  </div>
                   <input value={formData.reportedIncome} onChange={handleItemChange} type="number" placeholder="$ income" id="reportedIncome" className="w-1/3 mt-1 p-2 w-full border rounded" />
                 </div>
 
-                {/* Employment Occupation */}
-                <div className="mb-4 flex items-center" >
-                  <label className="block w-2/3 text-sm font-medium text-gray-700">Source of Income, occupation:</label>
-                  <input value={formData.employmentOccupation} onChange={handleItemChange} type="text" placeholder="Street vendor..." id="employmentOccupation" className="w-1/3 mt-1 p-2 w-full border rounded" />
-                </div>
+                <TextInputEntry 
+                  labeltext="Source of Income, occupation"
+                  isMandatory={true}
+                  placeholder="Street vendor..."
+                  id="employmentOccupation"
+                  onChangeHandler={handleItemChange}
+                />
 
-                {/* Employer */}
-                <div className="mb-4 flex items-center" >
-                  <label className="block w-2/3 text-sm font-medium text-gray-700">Employer:</label>
-                  <input value={formData.employmentEmployer} onChange={handleItemChange} type="text" placeholder="n/a (self)" id="employmentEmployer" className="w-1/3 mt-1 p-2 w-full border rounded" />
-                </div>
+                <TextInputEntry
+                  labeltext="Employer"
+                  isMandatory={true}
+                  placeholder="n/a (self-employed)"
+                  id="employmentEmployer"
+                  onChangeHandler={handleItemChange}
+                />
 
                 {/* Length of Employment */}
-                <div className="mb-4 flex items-center" >
-                  <label className="block w-2/3 text-sm font-medium text-gray-700">Length of employment in the current occupation (months)</label>
-                  <input value={formData.lengthOfEmploymentMonths} onChange={handleItemChange} type="number" placeholder="36 months" id="lengthOfEmploymentMonths" className="w-1/3 mt-1 p-2 w-full border rounded" />
+                <div className="flex mb-4 items-center">
+                  <div className={`block w-2/3`}>
+                    <label className="text-sm font-medium text-red-700 mr-1">*</label>
+                    <label className="text-sm font-medium text-gray-700">Length of employment with the current employer</label>
+                  </div>
+                  <select  value={formData.lengthOfEmploymentMonths} onChange={handleItemChange} id="lengthOfEmploymentMonths" className="mt-1 p-2 w-2/3 border rounded">
+                    <option value="-1">Not currently employed</option>
+                    <option value="0">Just started</option>
+                    <option value="1">1-3 months</option>
+                    <option value="4">4-12 months</option>  
+                    <option value="12">1-3 years</option>
+                    <option value="36" default>4+ years</option>
+                  </select>
                 </div>
                 
 

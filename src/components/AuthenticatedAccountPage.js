@@ -23,7 +23,7 @@ function AuthenticatedAccountPage() {
   const juicySessionId = useStore((state) => state.juicySessionId);
 
   const [amount, setAmount] = useState('');
-  const [term, setTerm] = useState('');
+  const [term, setTerm] = useState(6);
   const [purpose, setPurpose] = useState('');
 
   const handleAmountChange = (e) => {
