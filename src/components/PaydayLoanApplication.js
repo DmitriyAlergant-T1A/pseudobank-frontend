@@ -144,6 +144,16 @@ function PaydayLoanApplication() {
                   placeholder="GJUI1204"
                   id="socialNumber"
                   onChangeHandler={handleItemChange}
+                  onInputHandler={(e) => {
+                    const regex = /^[A-Z]{4}\d{6}[H,M][A-Z]{5}\d{2}$/;
+                    if (regex.test(e.target.value)) {
+                      e.target.classList.add('border-green-500', 'focus:bg-green-100');
+                      e.target.classList.remove('border-red-500', 'focus:bg-red-100');
+                    } else {
+                      e.target.classList.add('border-red-500', 'focus:bg-red-100');
+                      e.target.classList.remove('border-green-500', 'focus:bg-green-100');
+                    }
+                  }}
                 />
 
                 <TextInputEntry
