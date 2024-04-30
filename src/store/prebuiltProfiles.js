@@ -1,3 +1,8 @@
+/* These are AI-generated completely fake personas for demo purposes only. 
+This is NOT based on any real person personal information. 
+Any coincidences are accidental and not idended. */
+
+
 const prebuiltProfiles = [
     {
       "fullName": "James B. Smith",
