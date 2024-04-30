@@ -20,8 +20,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+
+
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'build')));
+
+// This route will not use authentication, since some of our forms (Payday Loan) are pre-auth
+app.use('/backend/decision', decisionRouter);
 
 // Initialize Auth0 if needed
 if (process.env.AUTH_AUTH0 === 'Y') {
@@ -31,12 +36,9 @@ if (process.env.AUTH_AUTH0 === 'Y') {
 // Public API Routes
 app.use('/config', configRouter);
 
-// Protected API Routes
-app.use('/backend/decision', requiresAuth(), decisionRouter);
-
 // Profile route as an example of a protected route
 app.get('/profile', requiresAuth(), (req, res) => {
-  res.send(JSON.stringify(req.oidc.user));
+  res.send(JSON.stringify(req?.oidc?.user));
 });
 
 // Handle React routing, return all requests to React app

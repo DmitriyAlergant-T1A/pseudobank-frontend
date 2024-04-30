@@ -6,6 +6,10 @@ import Logo from './Logo';
 
 import TextInputEntry from './FormElements/TextInputEntry';
 
+import { PrepopulateButton, PrepopulateButtonsContainer } from './PrepopulateButton';
+
+import prebuiltProfiles from '../store/prebuiltProfiles.js';
+
 function PaydayLoanApplication() {
 
   const [isSubmitEnabled, setIsSubmitEnabled] = useState(false);
@@ -135,6 +139,7 @@ function PaydayLoanApplication() {
                   isMandatory={true}
                   placeholder="Gaius Julius Caesar"
                   id="fullName"
+                  value={formData.fullName}
                   onChangeHandler={handleItemChange}
                 />
 
@@ -143,6 +148,7 @@ function PaydayLoanApplication() {
                   isMandatory={true}
                   placeholder="GJUI1204"
                   id="socialNumber"
+                  value={formData.socialNumber}
                   onChangeHandler={handleItemChange}
                   onInputHandler={(e) => {
                     const regex = /^[A-Z]{4}\d{6}[H,M][A-Z]{5}\d{2}$/;
@@ -161,6 +167,7 @@ function PaydayLoanApplication() {
                   isMandatory={true}
                   placeholder="caesar@romanempire.it"
                   id="email"
+                  value={formData.email}
                   onChangeHandler={handleItemChange}
                 />
 
@@ -169,6 +176,7 @@ function PaydayLoanApplication() {
                   isMandatory={true}
                   placeholder="123456789"
                   id="phone"
+                  value={formData.phone}
                   onChangeHandler={handleItemChange}
                   onInputHandler={(e) => e.target.value = e.target.value.replace(/\D/g, '')} 
                 />
@@ -202,6 +210,7 @@ function PaydayLoanApplication() {
                   isMandatory={true}
                   placeholder="Purpose of the loan"
                   id="purpose"
+                  value={formData.purpose}
                   onChangeHandler={handleItemChange}
                 />
                 
@@ -219,6 +228,7 @@ function PaydayLoanApplication() {
                   isMandatory={true}
                   placeholder="Street vendor..."
                   id="employmentOccupation"
+                  value={formData.employmentOccupation}
                   onChangeHandler={handleItemChange}
                 />
 
@@ -227,6 +237,7 @@ function PaydayLoanApplication() {
                   isMandatory={true}
                   placeholder="n/a (self-employed)"
                   id="employmentEmployer"
+                  value={formData.employmentEmployer}
                   onChangeHandler={handleItemChange}
                 />
 
@@ -272,6 +283,16 @@ function PaydayLoanApplication() {
               </div>
               </>
       </div>
+      <PrepopulateButtonsContainer>
+        {prebuiltProfiles.map((profile, index) => (
+          <PrepopulateButton
+            key={index}
+            profileData={profile}
+            setFormData={setFormData}
+            label={`Profile ${index + 1}`}
+          />
+        ))}
+      </PrepopulateButtonsContainer>
       <JuicyPixel />
     </>
   );
