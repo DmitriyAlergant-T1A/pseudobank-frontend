@@ -57,10 +57,10 @@ function PaydayLoanApplication() {
         && (formData.termDays > 0)
         && (formData.fullName.length > 0)
         && (formData.socialNumber.length > 0)
-        && (formData.reportedIncome > 0)
+        && (formData.reportedIncome >= 0)
         && (formData.employmentOccupation.length > 0)
         && (formData.employmentEmployer.length > 0)
-        && (formData.lengthOfEmploymentMonths > 0)
+        && (formData.lengthOfEmploymentMonths >= 0)
         ;
 
     //console.log('Enable submit:', _enableSubmit);
