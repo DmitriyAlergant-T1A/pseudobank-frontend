@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import WelcomePage from "./components/WelcomePage";
 import AuthenticatedAccountPage from "./components/AuthenticatedAccountPage";
 import PaydayLoanApplication  from  "./components/PaydayLoanApplication";
+import BNPLApplication from "./components/BNPLApplication"
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -25,6 +26,7 @@ function App() {
           </ProtectedRoute>
         } />
         <Route path="/PaydayLoanApplication"    element={<PaydayLoanApplication />} />
+        <Route path="/BuyNowPayLater"           element={<BNPLApplication />} />
       </Routes>
     </Router>
   );
