@@ -102,7 +102,7 @@ function PaydayLoanApplication() {
     };
 
     setAloktaRequest({"Submitting": "please wait..."});
-    setAloktaResponse({"Submitting": "please wait..."});
+    setAloktaResponse({});
 
     setFormSubmitted(true);
 

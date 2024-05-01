@@ -155,18 +155,25 @@ router.post('/bnpl', async (req, res) => {
 
       console.log("Alokta decision response: " + JSON.stringify(alokta_response, null, 2));
 
+      if (diagramId.includes("bnpl")) //BNPL - response massaging
+        res.json(
+          {
+            "request_to_alokta": aloktaRequest,
+            "alokta_response": 
+            {
+              "alokta_decision": alokta_response?.out_alokta_decision,
+              "alokta_risk_score": alokta_response?.out_alokta_risk_score,
+              "alokta_ai_evaluation": alokta_response?.out_alokta_ai_evaluation,
+              "partner_scores": alokta_response?.out_partner_scores?.map(item =>     ({Key: item?.Key, Value: item?.Value})),
+              "other_predictors": alokta_response?.out_other_predictors?.map(item => ({Key: item?.Key, Value: item?.Value}))
+            }
+          });
+      else                              //Payday, Cash loans - response massaging not implemented yet
       res.json(
         {
           "request_to_alokta": aloktaRequest,
-          "alokta_response": 
-          {
-            "alokta_decision": alokta_response?.out_alokta_decision,
-            "alokta_risk_score": alokta_response?.out_alokta_risk_score,
-            "alokta_ai_evaluation": alokta_response?.out_alokta_ai_evaluation,
-            "partner_scores": alokta_response?.out_partner_scores?.map(item =>     ({Key: item?.Key, Value: item?.Value})),
-            "other_predictors": alokta_response?.out_other_predictors?.map(item => ({Key: item?.Key, Value: item?.Value}))
-          }
-        });
+          "alokta_response": alokta_response
+        });       
 
     } catch (error) {
       console.error('Error submitting a request to Alokta:', error);
