@@ -24,14 +24,19 @@ function BNPLApplication() {
   const [formData, setFormData] = useState({
     fullName: '',
     socialNumber: '',
-    amount: '',
-    termDays: 7,
-    purpose: '',
     reportedIncome: '',
     employmentOccupation: '',
     employmentEmployer: '',
     lengthOfEmploymentMonths: 36
   });
+
+  const [bnplData, setBnplData] = useState({
+    vendorName: 'Pseudoshop',
+    itemName: 'Iphone 15 Pro',
+    amount: 999,
+    monthlyAmount: 45,
+    termMonths: 24
+  })
 
   const handleItemChange = useCallback((event) => {
     setFormData(prevFormData => ({
@@ -85,9 +90,9 @@ function BNPLApplication() {
       browser_connection_type: navigator.connection.type,
       browser_resolution: window.screen.width + 'x' + window.screen.height,
       juicyscore_session_id: juicySessionId,
-      requested_loan_amount: formData.amount,
-      requested_loan_purpose: formData.purpose,
-      requested_loan_term: formData.term,
+      requested_loan_amount: bnplData.amount,
+      requested_loan_purpose: `E-Commerce Buy Now Pay later, buying an ${bnplData['itemName']} at ${bnplData['vendorName']} for monthly installment payments of $${bnplData['monthlyAmount']} for ${bnplData['termMonths']} months`,
+      requested_loan_term: bnplData.termMonths * 30,
       customer_full_name: formData.fullName,
       customer_social_insurance_number: formData.socialNumber,
       customer_id: undefined,
@@ -98,6 +103,9 @@ function BNPLApplication() {
       customer_employment_employer: formData.employmentEmployer,
       customer_length_of_employment_months: formData.lengthOfEmploymentMonths,
     };
+
+    purpose: 
+
 
     setAloktaRequest({"Submitting": "please wait..."});
     setAloktaResponse({"Submitting": "please wait..."});
@@ -147,11 +155,33 @@ function BNPLApplication() {
                 <div className="font-semibold text-xl">Buy Now and Pay Later</div>
 
                     <div className="p-4">
-                        TBD: show item details <br/>
-                        TBD: show item details <br/>
-                        TBD: show item details <br/>
+                        <div className="flex items-center">
+                            <div className="block w-1/2 font-semibold">Vendor</div>
+                            <div className="flex m-2 text-blue-700">{bnplData['vendorName']}</div>
+                        </div>
+
+                        <div className="flex items-center">
+                            <div className="block w-1/2 font-semibold">Item:</div>
+                            <div className="flex m-2 text-blue-700">{bnplData['itemName']}</div>
+                        </div>
+
+                        <div className="flex items-center">
+                            <div className="block w-1/2 font-semibold">Full Price:</div>
+                            <div className="flex m-2 text-blue-700">$ {bnplData['amount']}</div>
+                        </div>
+
+                        <div className="flex items-center">
+                            <div className="block w-1/2 font-semibold">Monthly Payment:</div>
+                            <div className="flex m-2 text-blue-700">$ {bnplData['monthlyAmount']}/mo</div>
+                        </div>
+
+                        <div className="flex items-center">
+                            <div className="block w-1/2 font-semibold">Loan Term:</div>
+                            <div className="flex m-2 text-blue-700">{bnplData['termMonths']} months</div>
+                        </div>
                     </div>
-               
+
+                                  
                 <div className="font-semibold text-xl mb-4">Please give us a few details...</div>
 
                 <TextInputEntry
