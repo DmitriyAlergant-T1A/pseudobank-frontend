@@ -14,7 +14,7 @@ const prebuiltProfiles = [
       "employmentOccupation": "English Teacher - Advanced Grade (expat)",
       "employmentEmployer": "Felix Fernandez Private Catholic School",
       "lengthOfEmploymentMonths": 36,
-      "email": "james.b.smith@gmail.com",
+      "email": "jamesbsmith@gmail.com",
       "phone": "5556781234"
     },
     {

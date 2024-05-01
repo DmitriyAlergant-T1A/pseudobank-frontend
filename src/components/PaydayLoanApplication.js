@@ -81,7 +81,7 @@ function PaydayLoanApplication() {
     const requestBody = {
       browser_time_local: new Date().toLocaleString(), // Local time in the default locale
       browser_timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, // User's timezone
-      broswer_useragent: navigator.userAgent, // Browser version and details
+      browser_useragent: navigator.userAgent, // Browser version and details
       browser_platform: navigator.platform, // Type of device (e.g., MacIntel, Win32)
       browser_language: navigator.language, // Browser language (e.g., en-US)
       browser_connection_type: navigator.connection.type,

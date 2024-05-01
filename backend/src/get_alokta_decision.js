@@ -32,7 +32,7 @@ router.post('/cashloan', async (req, res) => {
 
       "channel": "site",
 
-      "browser_useragent":req.body.broswer_useragent,
+      "browser_useragent":req.body.browser_useragent,
       "browser_ip":req.ip,
       "browser_platform": req.body.browser_platform,
       "browser_language": req.body.browser_language,
@@ -62,7 +62,7 @@ router.post('/paydayloan', async (req, res) => {
 
     "channel": "site",
 
-    "browser_useragent":req.body.broswer_useragent,
+    "browser_useragent":req.body.browser_useragent,
     'browser_platform': req.body.browser_platform,
     "browser_ip":req.ip,
     "browser_timezone": req.body.browser_timezone,
@@ -89,6 +89,44 @@ router.post('/paydayloan', async (req, res) => {
   getAloktaDecision(aloktaRequest, process.env.ALOKTA_DECISION_DIAGRAM_ID_PAYDAY, res);
 });
 
+router.post('/bnpl', async (req, res) => {
+
+  const aloktaRequest = {
+    "juicyscore_session_id":  req.body.juicyscore_session_id,
+    "application_id":Math.floor(1000000000 + Math.random() * 9000000000).toString(),
+
+    "channel": "site",
+
+    "browser_useragent":req.body.browser_useragent,
+    'browser_platform': req.body.browser_platform,
+    "browser_ip":req.ip,
+    "browser_timezone": req.body.browser_timezone,
+    "browser_time_local": req.body.browser_time_local,
+    "browser_language": req.body.browser_language,
+    "browser_connection_type": req.body.browser_connection_type,
+    
+    "customer_full_name": req.body.customer_full_name,
+    "customer_social_insurance_number": req.body.customer_social_insurance_number,
+    "customer_id": stringToDecimal(req.body.customer_email).toString(),
+    "customer_email": req.body.customer_email,
+    "customer_phone": req.body.customer_phone,
+    "customer_reported_income": req.body.customer_reported_income,
+    "customer_employment_occupation": req.body.customer_employment_occupation,
+    "customer_employment_employer": req.body.customer_employment_employer,
+    "customer_length_of_employment_months": req.body.customer_length_of_employment_months,
+
+    "item_vendor":                req.body.item_vendor,
+    "item_name":                  req.body.item_name,  
+    "item_total_cost":            req.body.item_total_cost,
+    "loan_term_months":           req.body.loan_term_months,
+    "monthly_installment_amount": req.body.monthly_installment_amount,
+    "requested_loan_purpose":       req.body.requested_loan_purpose
+  }
+  console.log("Prepared Alokta decision request for BNPL Loan: " + JSON.stringify(aloktaRequest, null, 2));
+
+  getAloktaDecision(aloktaRequest, process.env.ALOKTA_DECISION_DIAGRAM_ID_BNPL, res);
+});
+
 
   async function getAloktaDecision(aloktaRequest, diagramId, res) {
 
@@ -113,14 +151,21 @@ router.post('/paydayloan', async (req, res) => {
         throw new Error(`Alokta decision response was not ok, status code ${response.status}, details: ${errorDetails}`);
       }
 
-      const data = await response.json();
+      const alokta_response = await response.json();
 
-      console.log("Alotka decision response: " + JSON.stringify(data, null, 2));
+      console.log("Alokta decision response: " + JSON.stringify(alokta_response, null, 2));
 
       res.json(
         {
           "request_to_alokta": aloktaRequest,
-          "alokta_response": data,
+          "alokta_response": 
+          {
+            "alokta_decision": alokta_response?.out_alokta_decision,
+            "alokta_risk_score": alokta_response?.out_alokta_risk_score,
+            "alokta_ai_evaluation": alokta_response?.out_alokta_ai_evaluation,
+            "partner_scores": alokta_response?.out_partner_scores?.map(item =>     ({Key: item?.Key, Value: item?.Value})),
+            "other_predictors": alokta_response?.out_other_predictors?.map(item => ({Key: item?.Key, Value: item?.Value}))
+          }
         });
 
     } catch (error) {

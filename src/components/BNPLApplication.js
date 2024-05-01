@@ -31,11 +31,11 @@ function BNPLApplication() {
   });
 
   const [bnplData, setBnplData] = useState({
-    vendorName: 'Pseudoshop',
-    itemName: 'Iphone 15 Pro',
-    amount: 999,
-    monthlyAmount: 45,
-    termMonths: 24
+    item_vendor: 'Pseudoshop',
+    item_name: 'Iphone 15 Pro',
+    item_total_cost: 999,
+    monthly_installment_amount: 45,
+    loan_term_months: 24
   })
 
   const handleItemChange = useCallback((event) => {
@@ -84,15 +84,12 @@ function BNPLApplication() {
     const requestBody = {
       browser_time_local: new Date().toLocaleString(), // Local time in the default locale
       browser_timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, // User's timezone
-      broswer_useragent: navigator.userAgent, // Browser version and details
+      browser_useragent: navigator.userAgent, // Browser version and details
       browser_platform: navigator.platform, // Type of device (e.g., MacIntel, Win32)
       browser_language: navigator.language, // Browser language (e.g., en-US)
       browser_connection_type: navigator.connection.type,
       browser_resolution: window.screen.width + 'x' + window.screen.height,
       juicyscore_session_id: juicySessionId,
-      requested_loan_amount: bnplData.amount,
-      requested_loan_purpose: `E-Commerce Buy Now Pay later, buying an ${bnplData['itemName']} at ${bnplData['vendorName']} for monthly installment payments of $${bnplData['monthlyAmount']} for ${bnplData['termMonths']} months`,
-      requested_loan_term: bnplData.termMonths * 30,
       customer_full_name: formData.fullName,
       customer_social_insurance_number: formData.socialNumber,
       customer_id: undefined,
@@ -102,19 +99,25 @@ function BNPLApplication() {
       customer_employment_occupation: formData.employmentOccupation,
       customer_employment_employer: formData.employmentEmployer,
       customer_length_of_employment_months: formData.lengthOfEmploymentMonths,
+      item_vendor: bnplData.item_vendor,
+      item_name: bnplData.item_name,
+      item_total_cost: bnplData.item_total_cost,
+      loan_term_months: bnplData.loan_term_months,
+      monthly_installment_amount: bnplData.monthly_installment_amount,
+      requested_loan_purpose: `E-Commerce Buy Now Pay later, buying an ${bnplData['item_name']} at ${bnplData['item_vendor']} for monthly installment payments of $${bnplData['monthly_installment_amount']} for ${bnplData['loan_term_months']} months`
     };
 
-    purpose: 
+    console.log(JSON.stringify(requestBody, null, 2));
 
 
     setAloktaRequest({"Submitting": "please wait..."});
-    setAloktaResponse({"Submitting": "please wait..."});
+    setAloktaResponse({});
 
     setFormSubmitted(true);
 
     try {
 
-      const response = await fetch('/backend/decision/paydayloan', {
+      const response = await fetch('/backend/decision/bnpl', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -157,27 +160,27 @@ function BNPLApplication() {
                     <div className="p-4">
                         <div className="flex items-center">
                             <div className="block w-1/2 font-semibold">Vendor</div>
-                            <div className="flex m-2 text-blue-700">{bnplData['vendorName']}</div>
+                            <div className="flex m-2 text-blue-700">{bnplData['item_vendor']}</div>
                         </div>
 
                         <div className="flex items-center">
                             <div className="block w-1/2 font-semibold">Item:</div>
-                            <div className="flex m-2 text-blue-700">{bnplData['itemName']}</div>
+                            <div className="flex m-2 text-blue-700">{bnplData['item_name']}</div>
                         </div>
 
                         <div className="flex items-center">
                             <div className="block w-1/2 font-semibold">Full Price:</div>
-                            <div className="flex m-2 text-blue-700">$ {bnplData['amount']}</div>
+                            <div className="flex m-2 text-blue-700">$ {bnplData['item_total_cost']}</div>
                         </div>
 
                         <div className="flex items-center">
                             <div className="block w-1/2 font-semibold">Monthly Payment:</div>
-                            <div className="flex m-2 text-blue-700">$ {bnplData['monthlyAmount']}/mo</div>
+                            <div className="flex m-2 text-blue-700">$ {bnplData['monthly_installment_amount']}/mo</div>
                         </div>
 
                         <div className="flex items-center">
                             <div className="block w-1/2 font-semibold">Loan Term:</div>
-                            <div className="flex m-2 text-blue-700">{bnplData['termMonths']} months</div>
+                            <div className="flex m-2 text-blue-700">{bnplData['loan_term_months']} months</div>
                         </div>
                     </div>
 

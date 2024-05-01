@@ -95,7 +95,7 @@ function AuthenticatedAccountPage() {
       customer_phone: userProfile?.user_metadata?.phone_number,
       browser_time_local: new Date().toLocaleString(), // Local time in the default locale
       browser_timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, // User's timezone
-      broswer_useragent: navigator.userAgent, // Browser version and details
+      browser_useragent: navigator.userAgent, // Browser version and details
       browser_platform: navigator.platform, // Type of device (e.g., MacIntel, Win32)
       browser_language: navigator.language, // Browser language (e.g., en-US)
       browser_location: geolocation,
