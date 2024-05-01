@@ -6,6 +6,10 @@ import Logo from './Logo';
 
 import TextInputEntry from './FormElements/TextInputEntry';
 
+import ReactJson from 'react-json-view';
+
+
+
 import { PrepopulateButton, PrepopulateButtonsContainer } from './PrepopulateButton';
 
 import prebuiltProfiles from '../store/prebuiltProfiles.js';
@@ -14,8 +18,8 @@ function PaydayLoanApplication() {
 
   const [isSubmitEnabled, setIsSubmitEnabled] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
-  const [aloktaRequest, setAloktaRequest] = useState('');
-  const [aloktaResponse, setAloktaResponse] = useState(false);
+  const [aloktaRequest, setAloktaRequest] = useState({});
+  const [aloktaResponse, setAloktaResponse] = useState({});
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -60,7 +64,7 @@ function PaydayLoanApplication() {
         && (formData.reportedIncome >= 0)
         && (formData.employmentOccupation.length > 0)
         && (formData.employmentEmployer.length > 0)
-        && (formData.lengthOfEmploymentMonths >= 0)
+        && (formData.lengthOfEmploymentMonths >= -1)
         ;
 
     //console.log('Enable submit:', _enableSubmit);
@@ -97,12 +101,13 @@ function PaydayLoanApplication() {
       customer_length_of_employment_months: formData.lengthOfEmploymentMonths,
     };
 
-    setAloktaRequest('Submitting, please wait...');
-    setAloktaResponse('Submitting, please wait...')
+    setAloktaRequest({"Submitting": "please wait..."});
+    setAloktaResponse({"Submitting": "please wait..."});
 
     setFormSubmitted(true);
 
     try {
+
       const response = await fetch('/backend/decision/paydayloan', {
         method: 'POST',
         headers: {
@@ -111,16 +116,24 @@ function PaydayLoanApplication() {
         body: JSON.stringify(requestBody),
       });
 
-      const data = await response.json();
 
-      setAloktaRequest(JSON.stringify(data.request_to_alokta, null, 2));
-      setAloktaResponse(JSON.stringify(data.alokta_response, null, 2));
-      
+      if (response.status === 200)
+      {
+        const data = await response.json();
+
+        setAloktaRequest(data.request_to_alokta);
+        setAloktaResponse(data.alokta_response);
+      }
+      else
+      {
+        setAloktaRequest ({"Error submitting a request to Alokta": {"HTTP Response Code": response.status}});
+        setAloktaResponse({"Error submitting a request to Alokta": {"HTTP Response Code": response.status}});
+      }
     } catch (error) {
       console.error('Error submitting a request to Alokta:', error);
 
-      setAloktaRequest(error.toString());
-      setAloktaResponse(error.toString());
+      setAloktaRequest({"ERROR":error.message});
+      setAloktaResponse({"ERROR":error.message});
     }
   }
 
@@ -257,7 +270,6 @@ function PaydayLoanApplication() {
                   </select>
                 </div>
                 
-
                 {/* Submit Button */}
                 <button id="mySubmitButton" type="submit" onClick={handleSubmit} 
                   disabled={!isSubmitEnabled} 
@@ -267,20 +279,22 @@ function PaydayLoanApplication() {
               </form>
 
               <>
-              <div className="flex flex-col items-center w-full p-2 border rounded text-sm text-slate-400">
-                <div className="response-box">
-                  <label className="flex text-slate-700 mb-1">JuicyScore Session ID</label>
-                  <textarea readOnly value={juicySessionId?juicySessionId:''} rows="2" className=""></textarea>
-                </div>
-                <div className="response-box">
-                  <label className="flex text-slate-700 mb-1">Request to Alokta</label>
-                  <textarea readOnly value={aloktaRequest?aloktaRequest:''} rows="12" className=""></textarea>
-                </div>
-                <div className="response-box">
-                  <label className="flex text-slate-700 mb-1">Alokta Response</label>
-                  <textarea readOnly value={aloktaResponse?aloktaResponse:''} rows="12"></textarea>
-                </div>
-              </div>
+              { formSubmitted && (
+                <div className="flex flex-col items-center w-full p-2 border rounded text-sm text-slate-400">
+                  <div className="response-box border border-gray-500 border-1 border-opacity-30 p-2">
+                    <label className="flex text-slate-700 mb-1">JuicyScore Session ID (pixel embedded on this front-end page)</label>
+                    <textarea readOnly value={juicySessionId?juicySessionId:''} rows="2" className=""></textarea>
+                  </div>
+                  <div className="response-box border border-gray-500 border-1 border-opacity-30 p-2">
+                    <label className="flex text-slate-700 mb-1">Pseudobank Back-End request to Alokta</label>
+                    <ReactJson src={aloktaRequest?aloktaRequest:{}} theme="rjv-default" collapsed={false} displayDataTypes={false} name={false} displayObjectSize={false} enableClipboard={false}/>
+                  </div>
+                  <div className="response-box border border-gray-500 border-1 border-opacity-30 p-2">
+                    <label className="flex text-slate-700 mb-1">Alokta Response</label>
+                    <ReactJson src={aloktaResponse?aloktaResponse:{}} theme="vscodeTheme" collapsed={false} displayDataTypes={false} name={false} displayObjectSize={false} enableClipboard={false}/>
+                  </div>
+                </div> )
+              }
               </>
       </div>
       <PrepopulateButtonsContainer>
