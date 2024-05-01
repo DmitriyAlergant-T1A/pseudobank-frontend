@@ -26,7 +26,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install only production dependencies
-RUN npm install --only=production
+RUN npm install --only=production --legacy-peer-deps
 
 # Copy the build directory from the builder stage
 COPY --from=builder /app/build ./build
