@@ -165,7 +165,7 @@ router.post('/bnpl', async (req, res) => {
               "alokta_risk_score": alokta_response?.out_alokta_risk_score,
               "alokta_ai_evaluation": alokta_response?.out_alokta_ai_evaluation,
               "partner_scores": alokta_response?.out_partner_scores?.map(item =>     ({Key: item?.Key, Value: item?.Value})),
-              "other_predictors": alokta_response?.out_other_predictors?.map(item => ({Key: item?.Key, Value: item?.Value}))
+              "inputs_and_predictors": alokta_response?.out_inputs_and_predictors?.map(item => ({Key: item?.Key, Value: item?.Value}))
             }
           });
       else                              //Payday, Cash loans - response massaging not implemented yet

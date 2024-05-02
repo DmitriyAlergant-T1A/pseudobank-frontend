@@ -7,6 +7,8 @@ import Logo from './Logo';
 import TextInputEntry from './FormElements/TextInputEntry';
 
 import ReactJson from 'react-json-view';
+import Modal from 'react-modal';
+
 
 
 
@@ -17,9 +19,15 @@ import prebuiltProfiles from '../store/prebuiltProfiles.js';
 function BNPLApplication() {
 
   const [isSubmitEnabled, setIsSubmitEnabled] = useState(false);
-  const [formSubmitted, setFormSubmitted] = useState(false);
+  
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
+
+  const [isWaitingForDecision, setIsWaitingForDecision] = useState(false);
+
   const [aloktaRequest, setAloktaRequest] = useState({});
   const [aloktaResponse, setAloktaResponse] = useState({});
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -113,7 +121,9 @@ function BNPLApplication() {
     setAloktaRequest({"Submitting": "please wait..."});
     setAloktaResponse({});
 
-    setFormSubmitted(true);
+    setIsFormSubmitted(true);
+    setIsModalOpen(true);
+    setIsWaitingForDecision(true);
 
     try {
 
@@ -144,48 +154,65 @@ function BNPLApplication() {
       setAloktaRequest({"ERROR":error.message});
       setAloktaResponse({"ERROR":error.message});
     }
+    finally {
+      setIsWaitingForDecision(false);
+    }
   }
-
   
   return (
     <>
       <Logo />
 
+      <div className="w-full flex flex-col w-full items-center justify-start min-h-screen bg-gray-100 p-4 mx-auto">
 
-      <div className="w-full flex flex-col items-center justify-start min-h-screen bg-gray-100 p-4 mx-auto">
-              <form className="mt-4 p-6 bg-white rounded shadow-md w-full max-w-md" onSubmit={handleSubmit}>
+              <form className="mt-4 p-6 bg-white rounded shadow-md w-full max-w-2xl" onSubmit={handleSubmit}>
                
-                <div className="font-semibold text-xl">Buy Now and Pay Later</div>
+                  <div className="flex">
 
-                    <div className="p-4">
-                        <div className="flex items-center">
-                            <div className="block w-1/2 font-semibold">Vendor</div>
-                            <div className="flex m-2 text-blue-700">{bnplData['item_vendor']}</div>
+                    <div className="flex-col w-3/4">
+
+                        <div className="font-semibold text-xl flex">
+                          Buy Now and Pay Later
                         </div>
 
-                        <div className="flex items-center">
-                            <div className="block w-1/2 font-semibold">Item:</div>
-                            <div className="flex m-2 text-blue-700">{bnplData['item_name']}</div>
-                        </div>
+                        <div className="flex-col px-6 py-2 max-w-md">
 
-                        <div className="flex items-center">
-                            <div className="block w-1/2 font-semibold">Full Price:</div>
-                            <div className="flex m-2 text-blue-700">$ {bnplData['item_total_cost']}</div>
-                        </div>
+                            <div className="flex items-center p-1">
+                                <div className="block w-1/2 font-semibold">Vendor</div>
+                                <div className="flex text-blue-700">{bnplData['item_vendor']}</div>
+                            </div>
 
-                        <div className="flex items-center">
-                            <div className="block w-1/2 font-semibold">Monthly Payment:</div>
-                            <div className="flex m-2 text-blue-700">$ {bnplData['monthly_installment_amount']}/mo</div>
-                        </div>
+                            <div className="flex items-center p-1">
+                                <div className="block w-1/2 font-semibold">Item:</div>
+                                <div className="flex text-blue-700">{bnplData['item_name']}</div>
+                            </div>
 
-                        <div className="flex items-center">
-                            <div className="block w-1/2 font-semibold">Loan Term:</div>
-                            <div className="flex m-2 text-blue-700">{bnplData['loan_term_months']} months</div>
+                            <div className="flex items-center p-1">
+                                <div className="block w-1/2 font-semibold">Full Price:</div>
+                                <div className="flex text-blue-700">${bnplData['item_total_cost']}</div>
+                            </div>
+
+                            <div className="flex items-center p-1">
+                                <div className="block w-1/2 font-semibold">Monthly Payment:</div>
+                                <div className="flex text-blue-700">${bnplData['monthly_installment_amount']} monthly</div>
+                            </div>
+
+                            <div className="flex items-center p-1">
+                                <div className="block w-1/2 font-semibold">Loan Term:</div>
+                                <div className="flex text-blue-700">{bnplData['loan_term_months']} months</div>
+                            </div>
                         </div>
                     </div>
 
+                    <div className="flex w-1/4 items-center justify-center">
+                      <img src="iphone_15_small.webp"/>
+                    </div>
+
+                  </div>
                                   
-                <div className="font-semibold text-xl mb-4">Please give us a few details...</div>
+                <div className="flex font-semibold text-xl my-4">
+                  Please give us a few details...
+                </div>
 
                 <TextInputEntry
                   labeltext="Full Legal Name"
@@ -283,10 +310,11 @@ function BNPLApplication() {
                   className={
                       `${isSubmitEnabled ? 'bg-green-500 hover:bg-green-700' : 'bg-gray-300'} 
                         px-4 py-2 text-white rounded transition duration-150 ease-in-out`}>Submit</button>
+
               </form>
 
               <>
-              { formSubmitted && (
+              { isFormSubmitted && (
                 <div className="flex flex-col items-center w-full p-2 border rounded text-sm text-slate-400">
                   <div className="response-box border border-gray-500 border-1 border-opacity-30 p-2">
                     <label className="flex text-slate-700 mb-1">JuicyScore Session ID (pixel embedded on this front-end page)</label>
@@ -304,6 +332,38 @@ function BNPLApplication() {
               }
               </>
       </div>
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={() => setIsModalOpen(false)}
+        className="fixed inset-0 flex items-center justify-center p-4 bg-black bg-opacity-50"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-50"
+      >
+        <div className="bg-white rounded-lg shadow-lg p-6 max-w-md mx-auto">
+          <h2 className="text-2xl font-semibold mb-4">Alokta Decision</h2>
+          <p className="text-lg">
+            {
+              (isWaitingForDecision) ? (
+                `Please wait...` 
+              )
+              : (aloktaResponse?.alokta_decision == 'Approved' || aloktaResponse?.alokta_decision == 'Accept') ? (
+                <span className="text-green-700 font-semibold">APPROVED</span>
+              ) 
+              : (aloktaResponse?.alokta_decision == 'Rejected' || aloktaResponse?.alokta_decision == 'Reject' || aloktaResponse?.alokta_decision == 'Decline') ? (
+                <span className="text-red-700 font-semibold">REJECTED</span>
+              ) 
+              : (
+                `Unexpected decision ${aloktaResponse?.alokta_decision}`
+              )
+            }
+          </p>
+          <button
+            onClick={() => setIsModalOpen(false)}
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Close
+          </button>
+        </div>
+      </Modal>
       <PrepopulateButtonsContainer>
         {prebuiltProfiles.map((profile, index) => (
           <PrepopulateButton
