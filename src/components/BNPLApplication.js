@@ -78,13 +78,30 @@ function BNPLApplication() {
         && (formData.lengthOfEmploymentMonths >= -1)
         ;
 
-    //console.log('Enable submit:', _enableSubmit);
-
-    setIsSubmitEnabled(_enableSubmit);
-
-    //setIsSubmitEnabled(true);
-    
+    setIsSubmitEnabled(_enableSubmit);   
   }, [formData]);
+
+
+  const socialNumberRef = useRef(null);
+
+  useEffect( () => {
+    const socialNumberInput = document.getElementById('socialNumber');
+
+    const checkSSNFormat = (inputField) => 
+    {
+      const regex = /^[A-Z]{4}\d{6}[H,M][A-Z]{5}\d{2}$/;
+                          if (regex.test(inputField.value)) {
+                            inputField.classList.add('border-green-500', 'focus:bg-green-100');
+                            inputField.classList.remove('border-red-500', 'focus:bg-red-100');
+                          } else {
+                            inputField.classList.add('border-red-500', 'focus:bg-red-100');
+                            inputField.classList.remove('border-green-500', 'focus:bg-green-100');
+                          }
+    }
+    
+    checkSSNFormat(socialNumberInput)
+
+  }, [formData.socialNumber])
  
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -230,16 +247,6 @@ function BNPLApplication() {
                   id="socialNumber"
                   value={formData.socialNumber}
                   onChangeHandler={handleItemChange}
-                  onInputHandler={(e) => {
-                    const regex = /^[A-Z]{4}\d{6}[H,M][A-Z]{5}\d{2}$/;
-                    if (regex.test(e.target.value)) {
-                      e.target.classList.add('border-green-500', 'focus:bg-green-100');
-                      e.target.classList.remove('border-red-500', 'focus:bg-red-100');
-                    } else {
-                      e.target.classList.add('border-red-500', 'focus:bg-red-100');
-                      e.target.classList.remove('border-green-500', 'focus:bg-green-100');
-                    }
-                  }}
                 />
 
                 <TextInputEntry
@@ -338,7 +345,7 @@ function BNPLApplication() {
         className="fixed inset-0 flex items-center justify-center p-4 bg-black bg-opacity-50"
         overlayClassName="fixed inset-0 bg-black bg-opacity-50"
       >
-        <div className="bg-white rounded-lg shadow-lg p-6 max-w-md mx-auto">
+        <div className="bg-white rounded-lg shadow-lg p-6 max-w-md mx-auto text-center flex flex-col items-center">
           <h2 className="text-2xl font-semibold mb-4">Alokta Decision</h2>
           <p className="text-lg">
             {
@@ -352,7 +359,7 @@ function BNPLApplication() {
                 <span className="text-red-700 font-semibold">REJECTED</span>
               ) 
               : (
-                `Unexpected decision ${aloktaResponse?.alokta_decision}`
+                `Unexpected decision: "${aloktaResponse?.alokta_decision}"`
               )
             }
           </p>
