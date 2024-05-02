@@ -12,6 +12,8 @@
     "autoprefixer": "^10.4.19",
     "axios": "^1.6.8",
     "cors": "^2.8.5",
+    "deep-chat-react": "^1.4.11",
+    "deep-chat-web-llm": "^0.0.27",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-openid-connect": "^2.17.1",
@@ -20,12 +22,12 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-json-view": "^1.21.3",
+    "react-modal": "^3.16.1",
     "react-router-dom": "^6.22.1",
     "react-scripts": "5.0.1",
     "tailwindcss": "^3.4.1",
     "web-vitals": "^2.1.4",
-    "zustand": "^4.5.2",
-    "react-modal":"^3.16.1"
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "concurrently": "^6.0.0"
@@ -38,6 +40,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
+  },
+  "npmConfig": {
+    "legacy-peer-deps": true
   },
   "eslintConfig": {
     "extends": [

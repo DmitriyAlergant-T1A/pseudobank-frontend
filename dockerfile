@@ -4,6 +4,9 @@ FROM node:21-alpine as builder
 # Set the working directory
 WORKDIR /app
 
+ARG REACT_APP_OPENAI_ENDPOINT_SUFFIX
+ENV REACT_APP_OPENAI_ENDPOINT_SUFFIX=$REACT_APP_OPENAI_ENDPOINT_SUFFIX
+
 # Copy package.json and package-lock.json
 COPY package*.json ./
 

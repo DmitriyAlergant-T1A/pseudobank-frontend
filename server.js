@@ -1,9 +1,12 @@
+
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const decisionRouter = require('./backend/src/get_alokta_decision');
 const configRouter = require('./backend/src/serve_config');
 const { auth, requiresAuth } = require('express-openid-connect');
+
+const { OpenAI } = require('./backend/src/services/openai');
 
 // Load .env file
 require('dotenv').config();
@@ -35,6 +38,12 @@ if (process.env.AUTH_AUTH0 === 'Y') {
 
 // Public API Routes
 app.use('/config', configRouter);
+
+OPENAI_ENDPOINT_SUFFIX=process.env.OPENAI_ENDPOINT_SUFFIX
+
+app.post(`/openai-chat-stream-${OPENAI_ENDPOINT_SUFFIX}`, async (req, res, next) => {
+  OpenAI.chatStream(req.body, res, next);
+});
 
 // Profile route as an example of a protected route
 app.get('/profile', requiresAuth(), (req, res) => {

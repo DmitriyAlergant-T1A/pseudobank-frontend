@@ -120,7 +120,9 @@ router.post('/bnpl', async (req, res) => {
     "item_total_cost":            req.body.item_total_cost,
     "loan_term_months":           req.body.loan_term_months,
     "monthly_installment_amount": req.body.monthly_installment_amount,
-    "requested_loan_purpose":       req.body.requested_loan_purpose
+    "requested_loan_purpose":       req.body.requested_loan_purpose,
+
+    "support_chat_messages":      req.body.support_chat_messages,
   }
   console.log("Prepared Alokta decision request for BNPL Loan: " + JSON.stringify(aloktaRequest, null, 2));
 

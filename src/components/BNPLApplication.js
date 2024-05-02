@@ -6,10 +6,10 @@ import Logo from './Logo';
 
 import TextInputEntry from './FormElements/TextInputEntry';
 
+import PseudobankDeepChat from './PseudobankDeepChat.js';
+
 import ReactJson from 'react-json-view';
 import Modal from 'react-modal';
-
-
 
 
 import { PrepopulateButton, PrepopulateButtonsContainer } from './PrepopulateButton';
@@ -25,9 +25,13 @@ function BNPLApplication() {
   const [isWaitingForDecision, setIsWaitingForDecision] = useState(false);
 
   const [aloktaRequest, setAloktaRequest] = useState({});
+
   const [aloktaResponse, setAloktaResponse] = useState({});
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const chatElementRef = useRef(null);
+
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -55,6 +59,7 @@ function BNPLApplication() {
 
 
   const setConfig = useStore((state) => state.setConfig);
+
   const juicySessionId = useStore((state) => state.juicySessionId);
 
   useEffect(() => {
@@ -81,9 +86,6 @@ function BNPLApplication() {
     setIsSubmitEnabled(_enableSubmit);   
   }, [formData]);
 
-
-  const socialNumberRef = useRef(null);
-
   useEffect( () => {
     const socialNumberInput = document.getElementById('socialNumber');
 
@@ -102,9 +104,20 @@ function BNPLApplication() {
     checkSSNFormat(socialNumberInput)
 
   }, [formData.socialNumber])
+
+  const getChatMessages = () => {
+    if (chatElementRef.current) {
+      const messages = chatElementRef.current.getMessages();
+      console.log("Support Chat Messages: ",  messages);
+
+      return messages;
+    }
+  };
  
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    let supportChatMessages = getChatMessages();
   
     const requestBody = {
       browser_time_local: new Date().toLocaleString(), // Local time in the default locale
@@ -129,7 +142,8 @@ function BNPLApplication() {
       item_total_cost: bnplData.item_total_cost,
       loan_term_months: bnplData.loan_term_months,
       monthly_installment_amount: bnplData.monthly_installment_amount,
-      requested_loan_purpose: `E-Commerce Buy Now Pay later, buying an ${bnplData['item_name']} at ${bnplData['item_vendor']} for monthly installment payments of $${bnplData['monthly_installment_amount']} for ${bnplData['loan_term_months']} months`
+      requested_loan_purpose: `E-Commerce Buy Now Pay later, buying an ${bnplData['item_name']} at ${bnplData['item_vendor']} for monthly installment payments of $${bnplData['monthly_installment_amount']} for ${bnplData['loan_term_months']} months`,
+      support_chat_messages: supportChatMessages
     };
 
     console.log(JSON.stringify(requestBody, null, 2));
@@ -344,6 +358,7 @@ function BNPLApplication() {
         onRequestClose={() => setIsModalOpen(false)}
         className="fixed inset-0 flex items-center justify-center p-4 bg-black bg-opacity-50"
         overlayClassName="fixed inset-0 bg-black bg-opacity-50"
+        ariaHideApp={false}
       >
         <div className="bg-white rounded-lg shadow-lg p-6 max-w-md mx-auto text-center flex flex-col items-center">
           <h2 className="text-2xl font-semibold mb-4">Alokta Decision</h2>
@@ -382,6 +397,7 @@ function BNPLApplication() {
         ))}
       </PrepopulateButtonsContainer>
       <JuicyPixel />
+      <PseudobankDeepChat chatElementRef={chatElementRef} />      
     </>
   );
 }

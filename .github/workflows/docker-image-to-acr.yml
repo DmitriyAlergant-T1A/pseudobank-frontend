@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+env:   
+  REACT_APP_OPENAI_ENDPOINT_SUFFIX: ${{ secrets.REACT_APP_OPENAI_ENDPOINT_SUFFIX }}
+
 jobs:
   Build-and-Push:
     runs-on: ubuntu-latest
@@ -32,7 +35,10 @@ jobs:
     - name: Build Docker image
       run: |
         docker build . --build-arg REACT_APP_JUICYSCORE_DATA_API_KEY=${{ secrets.REACT_APP_JUICYSCORE_DATA_API_KEY }} \
-            -t ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/pseudobank-frontend:latest
+            -t ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/pseudobank-frontend:latest \
+            --build-arg REACT_APP_OPENAI_ENDPOINT_SUFFIX="${{ env.REACT_APP_OPENAI_ENDPOINT_SUFFIX }}"
+
+
         docker push         ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}.azurecr.io/pseudobank-frontend:latest
 
     - name: Push Docker image to ACR
