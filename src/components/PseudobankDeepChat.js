@@ -48,7 +48,7 @@ function PseudobankDeepChatComponent({ chatElementRef }) {
                             position: 'fixed',
                             right: '20px',
                             bottom: isChatVisible ? '420px' : '20px', // Adjust based on your chat component's height
-                            zIndex: 1000,
+                            zIndex: 0,
                             }}
                             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
                             onClick={() => setIsChatVisible(true)}>

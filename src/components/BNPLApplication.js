@@ -339,7 +339,7 @@ function BNPLApplication() {
                 <div className="flex flex-col items-center w-full p-2 border rounded text-sm text-slate-400">
                   <div className="response-box border border-gray-500 border-1 border-opacity-30 p-2">
                     <label className="flex text-slate-700 mb-1">JuicyScore Session ID (pixel embedded on this front-end page)</label>
-                    <textarea readOnly value={juicySessionId?juicySessionId:''} rows="2" className=""></textarea>
+                    <textarea readOnly value={juicySessionId?juicySessionId:''} rows="2" className="bg-gray-100 border boder-2"></textarea>
                   </div>
                   <div className="response-box border border-gray-500 border-1 border-opacity-30 p-2">
                     <label className="flex text-slate-700 mb-1">Pseudobank Back-End request to Alokta</label>

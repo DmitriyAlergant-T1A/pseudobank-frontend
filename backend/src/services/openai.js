@@ -8,14 +8,24 @@ class OpenAI {
     // Text messages are stored inside request body using the Deep Chat JSON format:
     // https://deepchat.dev/docs/connect
     const chatBody = {
-      messages: body.messages.map((message) => {
-        return {role: message.role === 'ai' ? 'assistant' : message.role, content: message.text};
-      }),
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a support assistant to the user of a Demo of an online neo-bank (pseudobank). The user may be completing various loan application forms such as PayDay Loan or Buy Now Pay Later form. Pretend to be a support person from the bank, provide assistance.'
+        },
+        ...body.messages.map((message) => {
+          return {
+            role: message.role === 'ai' ? 'assistant' : message.role,
+            content: message.text
+          };
+        })
+      ],
       model: body.model,
     };
     if (stream) chatBody.stream = true;
     return chatBody;
   }
+
 
   static async chat(body, res, next) {
     const chatBody = OpenAI.createChatBody(body);

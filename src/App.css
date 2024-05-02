@@ -73,8 +73,10 @@
 }
 
 .response-box {
-  margin-top: 20px; /* Adds space between boxes */
-  width: 50%; /* Adjust container width as needed */
+  margin-top: 20px; 
+  width: 60%; 
+  /* max-height: 500px;  */
+  overflow-y: auto;
 }
 
 .response-box textarea {
