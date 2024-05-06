@@ -113,6 +113,15 @@ function BNPLApplication() {
       return messages;
     }
   };
+
+  const clearChatMessages = () => {
+
+    console.log("clearChatMessages");
+    
+    if (chatElementRef.current) {
+      chatElementRef.current.clearMessages();
+    }
+  };
  
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -392,6 +401,7 @@ function BNPLApplication() {
             key={index}
             profileData={profile}
             setFormData={setFormData}
+            clearChatMessages={clearChatMessages}
             label={`Profile ${index + 1}`}
           />
         ))}

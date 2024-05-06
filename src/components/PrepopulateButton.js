@@ -9,11 +9,14 @@ export function PrepopulateButtonsContainer({ children }) {
   );
 }
 
- export function PrepopulateButton({ profileData, setFormData, label }) {
+ export function PrepopulateButton({ profileData, setFormData, clearChatMessages, label }) {
   return (
     <button
       type="button"
-      onClick={() => setFormData(profileData)}
+      onClick={() => {
+          setFormData(profileData); 
+          clearChatMessages();
+      }}
       className="m-1 p-2 bg-gray-500 text-white text-xs hover:bg-blue-700"
     >
       {label}

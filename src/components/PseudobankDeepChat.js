@@ -6,6 +6,13 @@ function PseudobankDeepChatComponent({ chatElementRef }) {
 
     const [isChatVisible, setIsChatVisible] = useState(false);
 
+    // const [chatMessages, setChatMessages] = useState([]);
+
+    // const handleNewMessage = (message) => {
+    //     setChatMessages((prevMessages) => [...prevMessages, message]);
+    // };
+
+
     return (
             <>
                     {isChatVisible && (
@@ -25,6 +32,8 @@ function PseudobankDeepChatComponent({ chatElementRef }) {
                                     additionalBodyProps: {model: 'gpt-3.5-turbo'}}}
                                 requestBodyLimits={{maxMessages: -1}}
                                 stream={true}
+                                // messages={chatMessages}
+                                // onNewMessage={handleNewMessage}
                             />
 
                             <button 
