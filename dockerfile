@@ -34,9 +34,10 @@ RUN npm install --only=production --legacy-peer-deps
 # Copy the build directory from the builder stage
 COPY --from=builder /app/build ./build
 
-# Copy backend files
+# Copy backend files and src directory
 COPY server.js ./
 COPY backend ./backend
+COPY src ./src
 
 # Expose the port on which the app will run
 EXPOSE 5500

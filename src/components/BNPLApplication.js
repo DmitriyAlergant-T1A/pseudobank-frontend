@@ -117,9 +117,9 @@ function BNPLApplication() {
   const clearChatMessages = () => {
 
     console.log("clearChatMessages");
-    
+
     if (chatElementRef.current) {
-      chatElementRef.current.clearMessages();
+      chatElementRef.current.clearMessages(true);
     }
   };
  

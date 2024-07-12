@@ -91,6 +91,11 @@ router.post('/paydayloan', async (req, res) => {
 
 router.post('/bnpl', async (req, res) => {
 
+  console.debug("Request to /paydayloan headers: " + JSON.stringify(req.headers, null, 2));
+
+  console.debug("Request to /paydayloan body: " + JSON.stringify(req.body, null, 2));
+
+  
   const aloktaRequest = {
     "juicyscore_session_id":  req.body.juicyscore_session_id,
     "application_id":Math.floor(1000000000 + Math.random() * 9000000000).toString(),

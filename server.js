@@ -4,6 +4,7 @@ const cors = require('cors');
 const path = require('path');
 const decisionRouter = require('./backend/src/get_alokta_decision');
 const configRouter = require('./backend/src/serve_config');
+const healthCheckRouter = require('./backend/src/healthcheck');
 const { auth, requiresAuth } = require('express-openid-connect');
 
 const { OpenAI } = require('./backend/src/services/openai');
@@ -35,6 +36,9 @@ app.use('/backend/decision', decisionRouter);
 if (process.env.AUTH_AUTH0 === 'Y') {
   app.use(auth(authConfig));
 }
+
+// Add this line with your other app.use statements
+app.use('/healthcheck', healthCheckRouter);
 
 // Public API Routes
 app.use('/config', configRouter);
